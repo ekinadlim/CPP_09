@@ -1,0 +1,1 @@
+diff <(./btc tests/test.txt) tests/test_check.txt
