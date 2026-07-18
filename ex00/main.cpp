@@ -12,6 +12,6 @@ int main(int argc, char **argv) {
 		BitcoinExchange btcex(argv[1], data_file_name);
 	}
 	catch (std::exception & e) {
-		std::cout << "Error: " << e.what() << std::endl;
+		std::cerr << "Error: " << e.what() << std::endl;
 	}
 }
