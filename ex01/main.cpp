@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <algorithm>
 
-
 std::string validate_and_cleanup_input(std::string input) {
 	input.erase(std::remove_if(input.begin(), input.end(), isspace), input.end());
 	return input;
@@ -21,7 +20,7 @@ int main(int argc, char **argv) {
 
 	input = validate_and_cleanup_input(input);
 
-	int result = RPN::calculate(input);
+	float result = RPN::calculate(input);
 	std::cerr << result << std::endl;
 	////////
 	} catch (std::exception & e) {

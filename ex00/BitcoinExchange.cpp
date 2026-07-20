@@ -25,6 +25,9 @@ void BitcoinExchange::getDataMap(const char *filename) {
 	if (!std::getline(dataFile, line))
 		throw std::runtime_error("Data file is empty.");
 
+	if (line.compare("date,exchange_rate"))
+		throw std::runtime_error("Database header is wrong.");
+
 	std::string	date_str;
 	std::string	value_str;
 	while (std::getline(dataFile, date_str, ',')) {
@@ -51,23 +54,21 @@ void BitcoinExchange::getInputMap(const char *filename) {
 	
 	while (std::getline(inputFile, line)) {
 		try {
-			if (inputFile.eof())
-				break;
 			if (line.empty())
 				continue;
-
+			
 			std::size_t pipe = line.find('|');
 			if (pipe == std::string::npos)
 				throw std::runtime_error("Missing '|'.");
 			_input.date = line.substr(0, pipe);
-			if (*(_input.date.end() - 1) != ' ')
-				throw std::runtime_error("'|' needs to be surrounded by spaces.");
+			/*if (*(_input.date.end() - 1) != ' ')
+				throw std::runtime_error("'|' needs to be surrounded by spaces.");*/
 
 			dateValidation();
 
 			value_str = line.substr(line.find('|') + 1, line.size());
-			if (value_str[0] != ' ')
-				throw std::runtime_error("'|' needs to be surrounded by spaces.");
+			/*if (value_str[0] != ' ')
+				throw std::runtime_error("'|' needs to be surrounded by spaces.");*/
 
 			valueValidation(value_str);
 
@@ -109,31 +110,33 @@ void BitcoinExchange::dateValidation() {
 	char 	c;
 	std::istringstream(_input.date) >> year >> c >> month >> c >> day;
 	
+	const int year_offset = 1900;
+	const int month_offset = 1;
+
+
+
 	std::tm	input = std::tm();
-	input.tm_year = year - 1900;
-	input.tm_mon = month - 1;
+	input.tm_year = year - year_offset;
+	input.tm_mon = month - month_offset;
 	input.tm_mday = day;
 
 	std::time_t tmp = std::mktime(&input);
 	if (tmp == -1)
 		throw BadInputException(_input.date);
-	std::tm *normalized = std::localtime(&tmp);
-	if (!normalized)
-		throw BadInputException(_input.date);
 
-	if (normalized->tm_year != input.tm_year ||
-			normalized->tm_mon != input.tm_mon || 
-			normalized->tm_mday != input.tm_mday)
+	if (year - year_offset != input.tm_year ||
+			month - month_offset != input.tm_mon || 
+			day != input.tm_mday)
 		throw BadInputException(_input.date);
 
 
-	std::time_t current_time = std::time(&current_time);
+	std::time_t current_time = std::time(NULL);
 	std::tm	max = *std::localtime(&current_time);
 
 	std::tm min = std::tm();
+	min.tm_year = 2009 - year_offset;
+	min.tm_mon = 1 - month_offset;
 	min.tm_mday = 2;
-	min.tm_mon = 1 - 1;
-	min.tm_year = 2009 - 1900;
 
 	if (std::difftime(std::mktime(&min), tmp) > 0 ||
 			std::difftime(std::mktime(&max), tmp) < 0)
@@ -145,12 +148,19 @@ void BitcoinExchange::valueValidation(std::string value_str) {
 	value_str.erase(value_str.find_last_not_of(" \t") + 1);
 
 	bool has_value = false;
+	bool has_dot = false;
 	for (std::size_t i = 0; i < value_str.size(); i++) {
-		unsigned char c = static_cast<unsigned char>(value_str[i]); 
+		unsigned char c = static_cast<unsigned char>(value_str[i]);
 		if (std::isdigit(c))
 			has_value = true;
-		else if ((c == '-' || c == '+') && i + 1 == value_str.size() && std::isdigit(static_cast<unsigned char>(value_str[i + 1])))
+		else if ((c == '-' || c == '+') && i == value_str.size() - 1 && std::isdigit(static_cast<unsigned char>(value_str[i + 1])))
 			continue;
+		else if (c == '.' && i != 0 && i != value_str.size() - 1) {
+			if (has_dot)
+				throw BadInputException(value_str);
+			has_dot = true;
+			continue;
+		}
 		else
 			throw BadInputException(value_str);
 	}
@@ -166,6 +176,7 @@ void BitcoinExchange::valueValidation(std::string value_str) {
 BitcoinExchange::BadInputException::~BadInputException() throw() {}
 BitcoinExchange::BadInputException::BadInputException() : error_msg("bad input") {}
 BitcoinExchange::BadInputException::BadInputException(std::string date) : error_msg("bad input => " + date) {}
+
 BitcoinExchange::BadInputException::BadInputException(float value) : error_msg("bad input => ") {
 	std::string value_str;
 	std::ostringstream(value_str) << value;
@@ -177,6 +188,7 @@ BitcoinExchange::BadInputException::BadInputException(float value) : error_msg("
 
 	error_msg.append(value_str);
 }
+
 const char *BitcoinExchange::BadInputException::what() const throw() {
 	return error_msg.c_str();
 }

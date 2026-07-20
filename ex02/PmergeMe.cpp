@@ -3,6 +3,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <algorithm>
 #include <iostream>
 #include <time.h>
 
@@ -33,10 +34,10 @@ PmergeMe::PmergeMe(int argc, char** argv, bool setDebugMode)
 	deq_time = Lib::stop_timer(&timer);
 
 	print_container("After:\t", _vec);
-	print_container("Right:\t", correct_sorted_vec);
-	std::cout << "Sorted " << (correct_sorted_vec == _vec ? "correctly" : "wrongly") << std::endl;
-	print_timer(vec_time, "vector", _vec_comps);
-	print_timer(deq_time, "deque ", _deq_comps);
+
+	print_timer(vec_time, "vector");
+	print_timer(deq_time, "deque ");
+	//std::cout << "comparisons " << _vec_comps << std::endl;
 }
 
 void PmergeMe::parse_numbers(char **argv) {
@@ -73,12 +74,11 @@ int PmergeMe::jacobsthal(std::size_t num) {
 	return b;
 }
 
-void PmergeMe::print_timer(double time, std::string containerName, std::size_t comparisonCount) {
+void PmergeMe::print_timer(double time, std::string containerName) {
 	std::cout
 		<< "Time to process a range of " << _num_count
 		<< " elements with std::" << containerName
-		<< " : " << time << " us" 
-		<< " => " << comparisonCount << " Comparisons."	<< std::endl;
+		<< " : " << time << " us" << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& os, const PmergeMe::vNode& node) {

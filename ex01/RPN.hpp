@@ -4,7 +4,7 @@
 
 class RPN {
 	public:
-		static int calculate(std::string input);
+		static float calculate(std::string input);
 		
 
 	private:
@@ -13,9 +13,9 @@ class RPN {
 		RPN(const RPN &other);
 		RPN &operator=(const RPN &other);
 
-		static int addition(int a, int b);
-		static int subtraction(int a, int b);
-		static int multiplication(int a, int b);
-		static int division(int a, int b);
+		static float addition(float a, float b);
+		static float subtraction(float a, float b);
+		static float multiplication(float a, float b);
+		static float division(float a, float b);
 
 };

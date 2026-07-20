@@ -44,11 +44,9 @@ std::deque<PmergeMe::dNode> PmergeMe::recursive(std::deque<dNode> input, std::si
 	if (big_deque.size() != 1) {
 		big_deque = recursive(big_deque, rec_level + 1);
 	}
-	//std::cout << "\nRecursion Level: " << rec_level << std::endl;
 	std::deque<std::size_t> order = build_jacobsthal_order<std::deque<size_t> >(small_deque.size());
 	for (std::size_t i = 0; i < small_deque.size(); ++i) {
 		const dNode &node = small_deque[order[i]];
-		//std::cout << "Small to insert: " << node.value << std::endl;
 		int max_bound = get_big_index<std::deque<dNode> >(big_deque, node.groupId.back(), rec_level);
 		if (max_bound == -1)
 			max_bound = big_deque.size();

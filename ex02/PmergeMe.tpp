@@ -39,13 +39,7 @@ int	PmergeMe::binary_search(const C &range, int num, std::size_t max, std::size_
 template <typename C>
 int PmergeMe::get_big_index(const C &big_vector, int groupId, std::size_t level) {
 	print_container("Vector: ", big_vector, DEBUG);
-	//std::cout << "Param GID: " << groupId << std::endl;
 	for (std::size_t i = 0; i < big_vector.size(); ++i) {
-		// std::cout << "Num: " << big_vector[i].value << " | GIDs: ";
-		// for (std::size_t j = 0; j < big_vector[i].groupId.size(); ++j) {
-		// 	std::cout << big_vector[i].groupId[j] << ' ';
-		// }
-		// std::cout << std::endl;
 		if (level + 1 < big_vector[i].groupId.size() && big_vector[i].groupId[level] == groupId)
 			return i;
 	}

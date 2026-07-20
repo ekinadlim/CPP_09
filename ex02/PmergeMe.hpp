@@ -3,7 +3,7 @@
 #include <vector>
 #include <deque>
 #include <string>
-#include <algorithm>
+
 #include <iostream>
 
 #define MAX_ARG 3500
@@ -56,7 +56,7 @@ class PmergeMe {
 		void pair_and_split(const std::deque<dNode> &input, std::deque<dNode> &big_vector, std::deque<dNode> &small_vector);
 		std::deque<dNode> recursive(std::deque<dNode> input, std::size_t rec_level);
 
-		void print_timer(double time, std::string con, std::size_t comparisonCount);
+		void print_timer(double time, std::string con);
 		template<typename C> void print_container(std::string prefixMessage, const C &container, bool debugMode = 0);
 };
 

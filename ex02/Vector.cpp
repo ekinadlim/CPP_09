@@ -46,11 +46,9 @@ std::vector<PmergeMe::vNode> PmergeMe::recursive(std::vector<vNode> input, std::
 	if (big_vector.size() != 1) {
 		big_vector = recursive(big_vector, rec_level + 1);
 	}
-	//std::cout << "\nRecursion Level: " << rec_level << std::endl;
 	std::vector<std::size_t> order = build_jacobsthal_order<std::vector<std::size_t> >(small_vector.size());
 	for (std::size_t i = 0; i < small_vector.size(); ++i) {
 		const vNode &node = small_vector[order[i]];
-		//std::cout << "Small to insert: " << node.value << std::endl;
 		int max_bound = get_big_index<std::vector<vNode> >(big_vector, node.groupId.back(), rec_level);
 		if (max_bound == -1)
 			max_bound = big_vector.size();
